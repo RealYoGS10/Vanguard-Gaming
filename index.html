@@ -2,109 +2,104 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VANGUARD | APEX</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>VANGUARD | V12 APEX</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Share+Tech+Mono&display=swap');
+        :root { --cyan: #00ffff; --bg: #00050a; --card-bg: #030a12; --glow: 10px; --border: 2px; }
+        body.light-mode { --bg: #f4f4f4; --cyan: #006666; --card-bg: #fff; color: #111; }
         
-        :root { 
-            --cyan: #00ffff; --bg: #00050a; --card-bg: #000;
-            --border-size: 3px; --glow: 10px;
-        }
-
-        /* THEMES */
-        body.light-mode { --bg: #f0f0f0; --cyan: #007777; --card-bg: #fff; color: #111; }
+        body { background: var(--bg); color: var(--cyan); font-family: 'Orbitron', sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; transition: 0.3s; }
         
-        /* THE COOL THING: GLITCH MATRIX */
-        .matrix-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 255, 255, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05));
-            background-size: 100% 2px, 3px 100%; pointer-events: none; z-index: 99999;
-        }
-
-        @keyframes rgb-flow {
-            0% { border-color: #ff0000; box-shadow: 0 0 var(--glow) #ff0000; }
-            33% { border-color: #00ff00; box-shadow: 0 0 var(--glow) #00ff00; }
-            66% { border-color: #0000ff; box-shadow: 0 0 var(--glow) #0000ff; }
-            100% { border-color: #ff0000; box-shadow: 0 0 var(--glow) #ff0000; }
-        }
-
-        body { background: var(--bg); color: var(--cyan); font-family: 'Orbitron', sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
-        .sidebar { width: 70px; background: rgba(0,10,10,0.95); border-right: 2px solid var(--cyan); display: flex; flex-direction: column; align-items: center; padding-top: 20px; z-index: 100; }
-        .side-btn { width: 45px; height: 45px; margin-bottom: 25px; border: 1px solid var(--cyan); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--cyan); background: transparent; transition: 0.3s; }
+        /* SIDEBAR */
+        .sidebar { width: 70px; background: rgba(0,10,10,0.9); border-right: 2px solid var(--cyan); display: flex; flex-direction: column; align-items: center; padding-top: 20px; z-index: 100; }
+        .side-btn { width: 45px; height: 45px; margin-bottom: 25px; border: 1px solid var(--cyan); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; font-size: 20px; color: var(--cyan); }
         .side-btn:hover, .side-btn.active { background: var(--cyan); color: #000; box-shadow: 0 0 15px var(--cyan); }
 
-        .main { flex: 1; overflow-y: auto; background: radial-gradient(circle, rgba(0,50,50,0.1) 0%, var(--bg) 100%); }
-        .view { display: none; padding: 20px 40px; }
-        .view.active { display: block; }
+        .main { flex: 1; overflow-y: auto; padding-bottom: 100px; }
+        header { padding: 40px; text-align: center; border-bottom: 2px solid var(--cyan); background: rgba(0,0,0,0.8); position: sticky; top: 0; z-index: 50; }
+        #search { background: rgba(0,0,0,0.5); color: var(--cyan); border: 1px solid var(--cyan); padding: 12px; width: 60%; font-family: 'Share Tech Mono'; outline: none; border-radius: 5px; }
+
+        /* THE GRID & NEW ICONS */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; padding: 40px; }
+        .card { background: var(--card-bg); border: var(--border) solid var(--cyan); border-radius: 12px; overflow: hidden; cursor: pointer; transition: 0.3s; position: relative; box-shadow: 0 0 var(--glow) rgba(0,255,255,0.1); }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 0 20px var(--cyan); }
+        .card.rgb { animation: rgb-anim 5s infinite linear; }
         
-        header { padding: 30px; text-align: center; border-bottom: 2px solid var(--cyan); background: rgba(0,0,0,0.8); position: sticky; top: 0; z-index: 50; }
-        #search { background: rgba(0,0,0,0.5); color: var(--cyan); border: 1px solid var(--cyan); padding: 12px; width: 60%; font-family: 'Share Tech Mono'; outline: none; }
+        @keyframes rgb-anim { 
+            0% { border-color: #ff0000; } 33% { border-color: #00ff00; } 66% { border-color: #0000ff; } 100% { border-color: #ff0000; }
+        }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; margin-top: 20px; }
-        .card { background: var(--card-bg); border: var(--border-size) solid var(--cyan); border-radius: 6px; overflow: hidden; cursor: pointer; transition: 0.2s; }
-        .card.rgb-on { animation: rgb-flow 5s infinite linear; }
-        .thumb { width: 100%; height: 90px; background: #0a0a0a; display: flex; align-items: center; justify-content: center; font-family: 'Share Tech Mono'; font-size: 8px; text-align: center; color: #333; border-bottom: 1px solid var(--cyan); }
-        .info { padding: 8px; text-align: center; font-weight: bold; font-size: 9px; }
+        .thumb-box { width: 100%; height: 110px; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
+        .thumb-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
+        .placeholder { position: absolute; font-size: 40px; opacity: 0.2; }
+        
+        .info { padding: 12px; text-align: center; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; border-top: 1px solid rgba(0,255,255,0.2); }
 
-        /* SETTINGS */
-        .s-container { max-width: 800px; margin: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .s-card { background: rgba(0,20,20,0.6); padding: 20px; border: 1px solid var(--cyan); border-radius: 10px; }
-        .g-btn { width: 100%; padding: 10px; background: transparent; color: var(--cyan); border: 1px solid var(--cyan); cursor: pointer; font-family: 'Orbitron'; margin-bottom: 10px; }
-        .g-btn:hover { background: var(--cyan); color: #000; }
-
+        /* MODAL */
         #theater { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; flex-direction: column; }
-        iframe { flex: 1; border: none; }
+        .t-bar { padding: 15px; background: #001111; border-bottom: 2px solid var(--cyan); display: flex; justify-content: space-between; align-items: center; }
+        iframe { flex: 1; border: none; background: #000; }
+        .g-btn { padding: 10px 20px; background: transparent; color: var(--cyan); border: 1px solid var(--cyan); cursor: pointer; font-family: 'Orbitron'; font-size: 11px; }
+        .g-btn:hover { background: var(--cyan); color: #000; }
     </style>
 </head>
 <body>
 
-    <div id="matrix" class="matrix-overlay"></div>
-
     <nav class="sidebar">
-        <div class="side-btn active" onclick="tab('home', this)">🏠</div>
-        <div class="side-btn" onclick="tab('settings', this)">⚙️</div>
+        <div class="side-btn active" onclick="show('home', this)">🏠</div>
+        <div class="side-btn" onclick="show('settings', this)">⚙️</div>
     </nav>
 
     <div class="main">
         <div id="home" class="view active">
             <header>
-                <h1 style="margin:0; letter-spacing: 12px;">VANGUARD</h1>
+                <h1 style="letter-spacing: 15px; margin-bottom: 20px;">VANGUARD</h1>
                 <input type="text" id="search" placeholder="SYSTEM_SEARCH..." oninput="filter()">
             </header>
-            <div id="game-list" class="grid"></div>
+            <div id="game-grid" class="grid"></div>
         </div>
 
-        <div id="settings" class="view">
-            <header><h1>CONTROL PANEL</h1></header>
-            <div class="s-container">
-                <div class="s-card">
-                    <h3>VISUAL EFFECTS</h3>
-                    <button class="g-btn" onclick="toggleRGB()">RGB BORDERS: <span id="rgb-st">ON</span></button>
-                    <button class="g-btn" onclick="toggleMatrix()">MATRIX OVERLAY: <span id="mt-st">OFF</span></button>
-                    <button class="g-btn" onclick="toggleDark()">TOGGLE LIGHT/DARK</button>
+        <div id="settings" class="view" style="display:none; padding: 50px;">
+            <h1>SYSTEM CONFIG</h1>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 30px; max-width: 800px;">
+                <div style="background: rgba(0,255,255,0.05); padding: 20px; border-radius: 10px; border: 1px solid var(--cyan);">
+                    <h3>VISUALS</h3>
+                    <button class="g-btn" style="width:100%" onclick="document.body.classList.toggle('light-mode')">TOGGLE DARK/LIGHT</button><br><br>
+                    <button class="g-btn" style="width:100%" onclick="toggleRGB()">TOGGLE RGB BORDERS</button>
                 </div>
-                <div class="s-card">
+                <div style="background: rgba(0,255,255,0.05); padding: 20px; border-radius: 10px; border: 1px solid var(--cyan);">
                     <h3>INTENSITY</h3>
-                    <p>GLOW: <input type="range" min="0" max="40" value="10" oninput="document.documentElement.style.setProperty('--glow', this.value+'px')"></p>
-                    <p>BORDER: <input type="range" min="1" max="10" value="3" oninput="document.documentElement.style.setProperty('--border-size', this.value+'px')"></p>
+                    <p>GLOW: <input type="range" min="0" max="50" value="10" oninput="document.documentElement.style.setProperty('--glow', this.value+'px')"></p>
+                    <p>BORDER: <input type="range" min="1" max="10" value="2" oninput="document.documentElement.style.setProperty('--border', this.value+'px')"></p>
                 </div>
             </div>
         </div>
     </div>
 
     <div id="theater">
-        <div style="padding:10px; background:#001a1a; display:flex; justify-content:space-between; border-bottom:2px solid var(--cyan);">
-            <button class="g-btn" style="width:auto" onclick="closeG()">BACK</button>
-            <h2 id="gt" style="margin:0; font-size:14px;">LOADING...</h2>
-            <button class="g-btn" style="width:auto" onclick="document.querySelector('iframe').requestFullscreen()">FULL</button>
+        <div class="t-bar">
+            <button class="g-btn" onclick="closeG()">BACK</button>
+            <div style="text-align: center;">
+                <span id="g-title" style="display:block; font-size: 14px; margin-bottom: 5px;">LOADING...</span>
+                <button id="popout" class="g-btn" style="font-size: 9px; padding: 4px 8px; border-color: #ff5555; color: #ff5555;">FIX: OPEN IN NEW TAB</button>
+            </div>
+            <button class="g-btn" onclick="document.querySelector('iframe').requestFullscreen()">FULLSCREEN</button>
         </div>
-        <iframe id="gf"></iframe>
+        <iframe id="g-frame"></iframe>
     </div>
 
     <script>
-        const db = [
-            {n:"HACKERTYPE", t:"hack"}, {n:"BOTTLE FLIP", t:"flip"}, {n:"RPS SHOOT", t:"rps"},
+        // CACHE BUSTER: Forces reload if version changes
+        const VER = "12.1";
+        if(localStorage.getItem('v_ver') !== VER) {
+            localStorage.setItem('v_ver', VER);
+            window.location.reload(true);
+        }
+
+        const games = [
             {n:"Drift Hunters", u:"https://drift-hunters.com"}, {n:"Polytrack", u:"https://polytrack.io"},
             {n:"Slow Roads", u:"https://slowroads.io"}, {n:"Smash Karts", u:"https://smashkarts.io"},
             {n:"Moto X3M", u:"https://motox3m.org"}, {n:"Drift Boss", u:"https://driftboss.com"},
@@ -113,55 +108,59 @@
             {n:"Venge.io", u:"https://venge.io"}, {n:"Kirka.io", u:"https://kirka.io"}, {n:"Ev.io", u:"https://ev.io"},
             {n:"1v1.lol", u:"https://1v1.lol"}, {n:"Deadshot.io", u:"https://deadshot.io"}, {n:"Kour.io", u:"https://kour.io"},
             {n:"Combat Online", u:"https://combatonline.com"}, {n:"Infinite Craft", u:"https://neal.fun/infinite-craft/"},
-            {n:"Password Game", u:"https://neal.fun/password-game/"}, {n:"GeoGuessr", u:"https://geoguessr.com"},
-            {n:"WorldGuessr", u:"https://worldguessr.com"}, {n:"Gartic Phone", u:"https://garticphone.com"},
-            {n:"Skribbl.io", u:"https://skribbl.io"}, {n:"Taming.io", u:"https://taming.io"}, {n:"Starve.io", u:"https://starve.io"},
-            {n:"Moomoo.io", u:"https://moomoo.io"}, {n:"Bloxd.io", u:"https://bloxd.io"}, {n:"Slither.io", u:"https://slither.io"},
-            {n:"Diep.io", u:"https://diep.io"}, {n:"Hole.io", u:"https://hole-io.com"}, {n:"Paper.io", u:"https://paper-io.com"},
-            {n:"Wings.io", u:"https://wings.io"}, {n:"Zombs Royale", u:"https://zombsroyale.io"}, {n:"Agar.io", u:"https://agar.io"},
-            {n:"FlyOrDie.io", u:"https://flyordie.io"}, {n:"Surviv.io", u:"https://surviv.io"}, {n:"Getaway Shootout", u:"https://getawayshootout.com"},
-            {n:"Rooftop Snipers", u:"https://rooftopsnipers.com"}, {n:"Burrito Bison", u:"https://burritobison.com"},
-            {n:"Happy Wheels", u:"https://totaljerkface.com/happy_wheels.tjf"}, {n:"Cookie Clicker", u:"https://orteil.dashnet.org/cookieclicker/"},
-            {n:"Tetr.io", u:"https://tetr.io"}, {n:"2048", u:"https://play2048.co"}, {n:"Wordle", u:"https://wordle.com"},
-            {n:"Contexto", u:"https://contexto.me"}, {n:"Absurdle", u:"https://absurdle.com"}, {n:"Little Alchemy 2", u:"https://littlealchemy2.com"},
-            {n:"Chess.com", u:"https://chess.com"}, {n:"Minecraft", u:"https://classic.minecraft.net"}, {n:"PokeRogue", u:"https://pokerogue.net"},
-            {n:"Runescape", u:"https://oldschool.runescape.com"}, {n:"Flyff", u:"https://universe.flyff.com"}, {n:"Fallen London", u:"https://fallenlondon.com"},
-            {n:"BitLife", u:"https://bitlifeonline.com"}, {n:"FNF", u:"https://fridaynightfunkin.net"}, {n:"TagPro", u:"https://tagpro.gg"},
-            {n:"Minesweeper", u:"https://minesweeper.online"}, {n:"Voxiom.io", u:"https://voxiom.io"}, {n:"Bonk.io", u:"https://bonk.io"},
-            {n:"Deeeep.io", u:"https://deeeep.io"}, {n:"Mope.io", u:"https://moper.io"}, {n:"Superhex.io", u:"https://superhex.io"},
-            {n:"Powerline.io", u:"https://powerline.io"}, {n:"Splix.io", u:"https://splix.io"}, {n:"Narrow.one", u:"https://narrow.one"},
-            {n:"BasketBros", u:"https://basketbros.io"}, {n:"Pixel Warfare", u:"https://pixelfare.io"}, {n:"Cubes2048", u:"https://cubes2048.io"},
-            {n:"EvoWars.io", u:"https://evowars.io"}, {n:"Hexanaut.io", u:"https://hexanaut.io"}, {n:"Worms Zone", u:"https://worms.zone"},
-            {n:"Ducklings.io", u:"https://ducklings.io"}, {n:"LolBeans", u:"https://lolbeans.io"}, {n:"Townscaper", u:"https://townscaper.com"}
+            {n:"GeoGuessr", u:"https://geoguessr.com"}, {n:"Skribbl.io", u:"https://skribbl.io"},
+            {n:"Bloxd.io", u:"https://bloxd.io"}, {n:"Slither.io", u:"https://slither.io"}, {n:"Diep.io", u:"https://diep.io"},
+            {n:"Hole.io", u:"https://hole-io.com"}, {n:"Paper.io", u:"https://paper-io.com"}, {n:"Agar.io", u:"https://agar.io"},
+            {n:"Cookie Clicker", u:"https://orteil.dashnet.org/cookieclicker/"}, {n:"Tetr.io", u:"https://tetr.io"},
+            {n:"Minecraft", u:"https://classic.minecraft.net"}, {n:"PokeRogue", u:"https://pokerogue.net"},
+            {n:"FNF", u:"https://fridaynightfunkin.net"}, {n:"Minesweeper", u:"https://minesweeper.online"},
+            {n:"BasketBros", u:"https://basketbros.io"}, {n:"Townscaper", u:"https://townscaper.com"},
+            {n:"HACKERTYPE", t:"hack"}, {n:"BOTTLE FLIP", t:"flip"}
         ];
 
-        let rgb = true;
-        function render() {
-            const g = document.getElementById('game-list'); g.innerHTML = "";
-            db.forEach(x => {
-                g.innerHTML += `<div class="card ${rgb?'rgb-on':''}" data-name="${x.n.toLowerCase()}" onclick="play('${x.u||''}','${x.n}','${x.t||''}')">
-                <div class="thumb">NOT_FOUND<br>[404]</div><div class="info">${x.n}</div></div>`;
+        let rgb = false;
+
+        function init() {
+            const grid = document.getElementById('game-grid');
+            grid.innerHTML = "";
+            games.forEach(g => {
+                // ICON LOGIC: Uses a screenshot service to get the site's thumbnail
+                const icon = g.u ? `https://api.screenshotmachine.com/?key=bc893e&url=${encodeURIComponent(g.u)}&dimension=320x240` : '';
+                grid.innerHTML += `
+                    <div class="card ${rgb?'rgb':''}" data-name="${g.n.toLowerCase()}" onclick="launch('${g.u||''}','${g.n}','${g.t||''}')">
+                        <div class="thumb-box">
+                            <div class="placeholder">🛡️</div>
+                            ${g.u ? `<img src="https://icon.horse/icon/${new URL(g.u).hostname}" onerror="this.style.display='none'">` : ''}
+                        </div>
+                        <div class="info">${g.n}</div>
+                    </div>`;
             });
         }
 
-        function tab(id, b) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.side-btn').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active'); b.classList.add('active');
+        function show(id, btn) {
+            document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
+            document.querySelectorAll('.side-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).style.display = 'block';
+            btn.classList.add('active');
         }
 
-        function toggleRGB() { rgb = !rgb; document.getElementById('rgb-st').innerText = rgb?'ON':'OFF'; render(); }
-        function toggleMatrix() { const m = document.getElementById('matrix'); m.style.display = m.style.display==='block'?'none':'block'; document.getElementById('mt-st').innerText = m.style.display==='block'?'ON':'OFF'; }
-        function toggleDark() { document.body.classList.toggle('light-mode'); }
-        function filter() { const q = document.getElementById('search').value.toLowerCase(); document.querySelectorAll('.card').forEach(c => c.style.display = c.dataset.name.includes(q)?'block':'none'); }
-
-        function play(u, n, t) {
-            document.getElementById('theater').style.display='flex'; document.getElementById('gt').innerText=n;
-            if(u) document.getElementById('gf').src = u;
-            else if(t==='hack') document.getElementById('gf').srcdoc = `<body style="background:#000;color:#0ff;font-family:monospace;display:flex;align-items:center;justify-content:center;height:100vh"><h2>TYPE: APEX_ACTIVE</h2></body>`;
+        function launch(u, n, t) {
+            document.getElementById('theater').style.display = 'flex';
+            document.getElementById('g-title').innerText = n;
+            document.getElementById('popout').onclick = () => window.open(u, '_blank');
+            const frame = document.getElementById('g-frame');
+            if(u) frame.src = u;
+            else if(t==='hack') frame.srcdoc = "<body style='background:#000;color:#0ff;display:flex;align-items:center;justify-content:center;height:100vh;font-family:monospace'><h1>ACCESS_GRANTED</h1></body>";
         }
-        function closeG() { document.getElementById('theater').style.display='none'; document.getElementById('gf').src=""; }
-        render();
+
+        function closeG() { document.getElementById('theater').style.display='none'; document.getElementById('g-frame').src=""; }
+        function toggleRGB() { rgb = !rgb; init(); }
+        function filter() {
+            const q = document.getElementById('search').value.toLowerCase();
+            document.querySelectorAll('.card').forEach(c => c.style.display = c.dataset.name.includes(q) ? 'block' : 'none');
+        }
+
+        init();
     </script>
 </body>
 </html>
