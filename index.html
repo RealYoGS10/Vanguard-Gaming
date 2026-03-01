@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VANGUARD | ORIGINALS</title>
+    <title>VANGUARD GAMING | MEGA-ARCADE</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Share+Tech+Mono&display=swap');
         :root { --cyan: #00ffff; --bg: #00050a; }
@@ -16,7 +16,7 @@
         }
 
         body { background: var(--bg); color: var(--cyan); font-family: 'Orbitron', sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
-        .sidebar { width: 70px; background: #001111; border-right: 2px solid var(--cyan); display: flex; flex-direction: column; align-items: center; padding-top: 20px; }
+        .sidebar { width: 70px; background: #001111; border-right: 2px solid var(--cyan); display: flex; flex-direction: column; align-items: center; padding-top: 20px; z-index: 10; }
         .side-btn { width: 45px; height: 45px; margin-bottom: 25px; border: 1px solid var(--cyan); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; font-size: 20px; }
         .side-btn:hover, .side-btn.active { background: var(--cyan); color: #000; box-shadow: 0 0 15px var(--cyan); }
 
@@ -25,18 +25,21 @@
         .view.active { display: block; }
         header { padding: 30px; text-align: center; border-bottom: 2px solid var(--cyan); background: rgba(0,0,0,0.8); margin-bottom: 20px; }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
-        .card { background: #000; border: 3px solid var(--cyan); border-radius: 10px; overflow: hidden; cursor: pointer; transition: 0.3s; }
+        .cat-title { font-size: 1.2rem; margin: 30px 0 15px; border-left: 4px solid var(--cyan); padding-left: 15px; text-transform: uppercase; letter-spacing: 3px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        
+        .card { background: #000; border: 3px solid var(--cyan); border-radius: 8px; overflow: hidden; cursor: pointer; transition: 0.3s; }
         .card.rgb-on { animation: rgb-flow 5s infinite linear; }
-        .thumb { width: 100%; height: 130px; background: #001111; display: flex; align-items: center; justify-content: center; font-family: 'Share Tech Mono'; font-size: 12px; text-align: center; color: #444; border-bottom: 1px solid var(--cyan); }
-        .info { padding: 12px; text-align: center; font-weight: bold; font-size: 11px; }
+        .thumb { width: 100%; height: 110px; background: #001111; display: flex; align-items: center; justify-content: center; font-family: 'Share Tech Mono'; font-size: 10px; text-align: center; color: #444; border-bottom: 1px solid var(--cyan); }
+        .info { padding: 10px; text-align: center; font-weight: bold; font-size: 10px; }
 
         #theater { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; flex-direction: column; }
         .t-bar { padding: 15px; background: #001a1a; border-bottom: 2px solid var(--cyan); display: flex; justify-content: space-between; }
-        #game-area { flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; font-family: 'Share Tech Mono'; }
+        #game-area { flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        iframe { width: 100%; height: 100%; border: none; }
         
         .g-btn { padding: 10px 20px; margin: 5px; background: transparent; color: var(--cyan); border: 1px solid var(--cyan); cursor: pointer; font-family: 'Orbitron'; }
-        input { background: #000; color: var(--cyan); border: 1px solid var(--cyan); padding: 10px; font-family: 'Share Tech Mono'; width: 300px; text-align: center; }
+        input { background: #000; color: var(--cyan); border: 1px solid var(--cyan); padding: 10px; font-family: 'Share Tech Mono'; width: 80%; text-align: center; }
     </style>
 </head>
 <body>
@@ -49,41 +52,91 @@
     <div class="main">
         <div id="home" class="view active">
             <header><h1 style="letter-spacing: 10px;">VANGUARD GAMING</h1></header>
-            <div class="grid" id="game-grid"></div>
+            <div id="arcade-content"></div>
         </div>
 
         <div id="settings" class="view">
-            <header><h1>SETTINGS</h1></header>
-            <button class="g-btn" style="width:100%" onclick="toggleRGB()">TOGGLE RGB BORDERS</button>
+            <header><h1>SYSTEM SETTINGS</h1></header>
+            <button class="g-btn" style="width:100%" onclick="toggleRGB()">TOGGLE RGB CHROMA BORDERS</button>
         </div>
     </div>
 
     <div id="theater">
         <div class="t-bar">
-            <button onclick="closeG()" class="g-btn">ABORT</button>
-            <h2 id="t-title" style="margin:0;">CORE_INIT</h2>
+            <button onclick="closeG()" class="g-btn">ABORT_MISSION</button>
+            <h2 id="t-title" style="margin:0; font-size:14px;">DEPLOYING...</h2>
             <span></span>
         </div>
         <div id="game-area"></div>
     </div>
 
     <script>
-        const games = [
-            { n: "HACKERTYPE", type: "hack" },
-            { n: "BOTTLE FLIP", type: "flip" },
-            { n: "RPS: SHOOT", type: "rps" },
-            { n: "BLOXD.IO", u: "https://bloxd.io/" },
-            { n: "VECK.IO", u: "https://veck.io/" },
-            { n: "SPACE WAVES", u: "https://spacewaves.io/" }
-        ];
+        const categories = {
+            "Vanguard Originals": [
+                { n: "HACKERTYPE", type: "hack" },
+                { n: "BOTTLE FLIP", type: "flip" },
+                { n: "RPS: SHOOT", type: "rps" }
+            ],
+            "Driving & Racing": [
+                { n: "Drift Hunters", u: "https://drift-hunters.com" },
+                { n: "Polytrack", u: "https://polytrack.io" },
+                { n: "Slow Roads", u: "https://slowroads.io" },
+                { n: "Smash Karts", u: "https://smashkarts.io" },
+                { n: "Moto X3M", u: "https://motox3m.org" },
+                { n: "Drift Boss", u: "https://driftboss.com" },
+                { n: "Madalin Cars 2", u: "https://madalin-stunt-cars-2.io" }
+            ],
+            "First-Person Shooters": [
+                { n: "Krunker.io", u: "https://krunker.io" },
+                { n: "Shell Shockers", u: "https://shellshockers.io" },
+                { n: "Venge.io", u: "https://venge.io" },
+                { n: "Kirka.io", u: "https://kirka.io" },
+                { n: "Ev.io", u: "https://ev.io" },
+                { n: "1v1.lol", u: "https://1v1.lol" }
+            ],
+            "Social & Viral": [
+                { n: "Infinite Craft", u: "https://neal.fun/infinite-craft/" },
+                { n: "Password Game", u: "https://neal.fun/password-game/" },
+                { n: "GeoGuessr", u: "https://geoguessr.com" },
+                { n: "Gartic Phone", u: "https://garticphone.com" },
+                { n: "Skribbl.io", u: "https://skribbl.io" },
+                { n: "Tetr.io", u: "https://tetr.io" },
+                { n: "Wordle", u: "https://wordle.com" }
+            ],
+            "Action & Survival": [
+                { n: "Bloxd.io", u: "https://bloxd.io" },
+                { n: "Slither.io", u: "https://slither.io" },
+                { n: "Diep.io", u: "https://diep.io" },
+                { n: "Hole.io", u: "https://hole-io.com" },
+                { n: "Paper.io", u: "https://paper-io.com" },
+                { n: "Wings.io", u: "https://wings.io" },
+                { n: "Zombs Royale", u: "https://zombsroyale.io" }
+            ],
+            "Casual & Classic": [
+                { n: "Cookie Clicker", u: "https://orteil.dashnet.org/cookieclicker/" },
+                { n: "Minecraft Classic", u: "https://classic.minecraft.net" },
+                { n: "Chess.com", u: "https://chess.com" },
+                { n: "2048", u: "https://play2048.co" },
+                { n: "Little Alchemy 2", u: "https://littlealchemy2.com" },
+                { n: "Happy Wheels", u: "https://totaljerkface.com/happy_wheels.tjf" }
+            ]
+        };
 
         let rgb = true;
+
         function load() {
-            const g = document.getElementById('game-grid'); g.innerHTML = "";
-            games.forEach(x => {
-                g.innerHTML += `<div class="card ${rgb?'rgb-on':''}" onclick="play('${x.u||''}','${x.n}','${x.type||''}')">
-                    <div class="thumb">IMAGE NOT FOUND<br>[404]</div><div class="info">${x.n}</div></div>`;
-            });
+            const content = document.getElementById('arcade-content');
+            content.innerHTML = "";
+            for (const [cat, games] of Object.entries(categories)) {
+                content.innerHTML += `<div class="cat-title">${cat}</div>`;
+                let grid = `<div class="grid">`;
+                games.forEach(x => {
+                    grid += `<div class="card ${rgb?'rgb-on':''}" onclick="play('${x.u||''}','${x.n}','${x.type||''}')">
+                        <div class="thumb">IMAGE NOT FOUND<br>[404]</div><div class="info">${x.n}</div></div>`;
+                });
+                grid += `</div>`;
+                content.innerHTML += grid;
+            }
         }
 
         function tab(id, b) {
@@ -99,31 +152,16 @@
             document.getElementById('t-title').innerText = n;
             const a = document.getElementById('game-area');
             if(u) a.innerHTML = `<iframe src="${u}"></iframe>`;
-            else if(t==='hack') startHacker();
-            else if(t==='flip') startFlip();
-            else if(t==='rps') startRPS();
-        }
-
-        function startHacker() {
-            const code = "ACCESS_MAIN_FRAME --BYPASS_ENCRYPTION --OVERRIDE_ROOT";
-            document.getElementById('game-area').innerHTML = `<h3>TYPE THE KEY:</h3><p style="color:#fff">${code}</p><input id="h-in" oninput="checkH(this,'${code}')">`;
-        }
-        function checkH(i, c) { if(i.value === c) { alert("SYSTEM OVERRIDDEN"); closeG(); } }
-
-        function startFlip() {
-            document.getElementById('game-area').innerHTML = `<h1 id="f-res">🍾</h1><button class="g-btn" onclick="flip()">FLIP BOTTLE</button>`;
-        }
-        function flip() {
-            const r = Math.random() > 0.7 ? "LANDED! ✅" : "FAILED ❌";
-            document.getElementById('f-res').innerText = r;
-        }
-
-        function startRPS() {
-            document.getElementById('game-area').innerHTML = `<h3>SHOOT!</h3><button class="g-btn" onclick="rps('Rock')">ROCK</button><button class="g-btn" onclick="rps('Paper')">PAPER</button><button class="g-btn" onclick="rps('Scissors')">SCISSORS</button><h2 id="r-res"></h2>`;
-        }
-        function rps(p) {
-            const m = ['Rock','Paper','Scissors']; const b = m[Math.floor(Math.random()*3)];
-            document.getElementById('r-res').innerText = `YOU: ${p} | BOT: ${b}`;
+            else if(t==='hack') {
+                const code = "VANGUARD_OVERRIDE_001";
+                a.innerHTML = `<h3 style="color:#fff">TYPE: ${code}</h3><input id="h-in" oninput="if(this.value==='${code}'){alert('SUCCESS');closeG()}">`;
+            }
+            else if(t==='flip') {
+                a.innerHTML = `<h1 id="f-res">🍾</h1><button class="g-btn" onclick="const r=Math.random()>0.7?'LANDED!':'FAILED';document.getElementById('f-res').innerText=r">FLIP</button>`;
+            }
+            else if(t==='rps') {
+                a.innerHTML = `<button class="g-btn" onclick="const m=['Rock','Paper','Scissors'];alert('BOT CHOSE: '+m[Math.floor(Math.random()*3)])">SHOOT!</button>`;
+            }
         }
 
         function closeG() { document.getElementById('theater').style.display = 'none'; document.getElementById('game-area').innerHTML = ""; }
