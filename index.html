@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VANGUARD GAMING | ORIGINALS</title>
+    <title>VANGUARD GAMING | V5</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Share+Tech+Mono&display=swap');
 
         :root { --cyan: #00ffff; --bg: #00050a; }
 
+        /* THE CHROMA ENGINE */
         @keyframes rgb-flow {
             0% { border-color: #ff0000; box-shadow: 0 0 15px #ff0000; }
             33% { border-color: #00ff00; box-shadow: 0 0 15px #00ff00; }
@@ -22,87 +23,107 @@
             display: flex; height: 100vh; overflow: hidden;
         }
 
-        /* SIDEBAR */
+        /* SIDEBAR FIX */
         .sidebar {
             width: 70px; background: #001111; border-right: 2px solid var(--cyan);
             display: flex; flex-direction: column; align-items: center; padding-top: 20px;
         }
 
         .side-btn {
-            width: 40px; height: 40px; margin-bottom: 20px;
-            border: 1px solid var(--cyan); border-radius: 5px;
+            width: 45px; height: 45px; margin-bottom: 25px;
+            border: 1px solid var(--cyan); border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.3s;
+            cursor: pointer; transition: 0.3s; font-size: 20px;
         }
 
-        .side-btn:hover { background: var(--cyan); color: #000; }
+        .side-btn:hover, .side-btn.active { background: var(--cyan); color: #000; box-shadow: 0 0 15px var(--cyan); }
 
-        /* MAIN DASHBOARD */
+        /* MAIN CONTENT */
         .main { flex: 1; overflow-y: auto; background: radial-gradient(circle, #001a2a 0%, #000 100%); }
-        header { padding: 30px; text-align: center; border-bottom: 2px solid var(--cyan); background: rgba(0,0,0,0.8); }
+        .view { display: none; padding: 40px; }
+        .view.active { display: block; }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; padding: 40px; }
+        header { padding: 30px; text-align: center; border-bottom: 2px solid var(--cyan); background: rgba(0,0,0,0.8); margin-bottom: 20px; }
 
-        /* THE CARD */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
+
+        /* CARDS & RGB TOGGLE */
         .card {
             background: #000; border: 3px solid var(--cyan); border-radius: 10px;
             overflow: hidden; cursor: pointer; transition: 0.3s;
-            animation: rgb-flow 5s infinite linear;
         }
-
-        .card:hover { transform: scale(1.05); }
+        .card.rgb-on { animation: rgb-flow 5s infinite linear; }
+        .card:hover { transform: scale(1.05); border-color: #fff; }
 
         .thumb {
-            width: 100%; height: 140px; background: #001111;
+            width: 100%; height: 130px; background: #001111;
             display: flex; align-items: center; justify-content: center;
-            font-family: 'Share Tech Mono'; font-size: 14px; text-align: center;
-            color: #555; border-bottom: 1px solid var(--cyan);
+            font-family: 'Share Tech Mono'; font-size: 12px; text-align: center;
+            color: #444; border-bottom: 1px solid var(--cyan);
         }
 
-        .info { padding: 10px; text-align: center; font-weight: bold; font-size: 12px; }
+        .info { padding: 12px; text-align: center; font-weight: bold; font-size: 11px; letter-spacing: 1px; }
 
-        /* THEATER & CUSTOM GAMES */
-        #theater {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 9999; flex-direction: column;
-        }
+        /* SETTINGS BOX */
+        .settings-card { background: #001111; padding: 30px; border: 2px solid var(--cyan); border-radius: 15px; max-width: 500px; margin: auto; }
+        .toggle-btn { background: #000; color: var(--cyan); border: 2px solid var(--cyan); padding: 10px 20px; cursor: pointer; font-family: 'Orbitron'; width: 100%; margin-top: 10px; }
 
-        .t-bar { padding: 15px; background: #001a1a; border-bottom: 2px solid var(--cyan); display: flex; justify-content: space-between; }
-        #game-area { flex: 1; width: 100%; display: flex; align-items: center; justify-content: center; }
+        /* THEATER */
+        #theater { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; flex-direction: column; }
+        .t-bar { padding: 15px; background: #001a1a; border-bottom: 2px solid var(--cyan); display: flex; justify-content: space-between; align-items: center; }
+        #game-area { flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; }
         iframe { width: 100%; height: 100%; border: none; }
-
-        button { background: transparent; color: var(--cyan); border: 1px solid var(--cyan); padding: 10px; cursor: pointer; font-family: 'Orbitron'; }
-        button:hover { background: var(--cyan); color: #000; }
+        
+        /* RPS STYLING */
+        .rps-btn { padding: 15px 30px; margin: 10px; font-size: 20px; background: #000; color: var(--cyan); border: 2px solid var(--cyan); cursor: pointer; font-family: 'Orbitron'; }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <div class="side-btn" onclick="location.reload()">🏠</div>
-        <div class="side-btn">🛡️</div>
-        <div class="side-btn">⚙️</div>
+        <div class="side-btn active" onclick="showTab('home', this)">🏠</div>
+        <div class="side-btn" onclick="showTab('trending', this)">🔥</div>
+        <div class="side-btn" onclick="showTab('settings', this)">⚙️</div>
     </div>
 
     <div class="main">
-        <header>
-            <h1 style="margin:0; letter-spacing: 8px;">VANGUARD GAMING</h1>
-            <p style="font-size: 10px; color: #444;">V4.2 // ORIGINALS_LOADED</p>
-        </header>
-        <div class="grid" id="g"></div>
+        <div id="home" class="view active">
+            <header>
+                <h1 style="margin:0; letter-spacing: 10px;">VANGUARD GAMING</h1>
+                <p style="font-size: 10px; color: #555;">SYSTEM: STABLE // RGB_SYNC: READY</p>
+            </header>
+            <div class="grid" id="game-grid"></div>
+        </div>
+
+        <div id="settings" class="view">
+            <header><h1>SYSTEM SETTINGS</h1></header>
+            <div class="settings-card">
+                <h3>BORDER EFFECTS</h3>
+                <p>Switch between RGB Chroma and Static Cyan mode.</p>
+                <button class="toggle-btn" onclick="toggleRGB()">TOGGLE RGB MODE</button>
+            </div>
+        </div>
+
+        <div id="trending" class="view">
+            <header><h1>TRENDING DEPLOYMENTS</h1></header>
+            <p style="text-align:center;">Analyzing Vanguard data streams...</p>
+        </div>
     </div>
 
     <div id="theater">
         <div class="t-bar">
-            <button onclick="closeG()">✖ CLOSE</button>
-            <h2 id="t-title" style="margin:0;">VANGUARD_CORE</h2>
-            <button onclick="full()">⛶ FULL</button>
+            <button onclick="closeG()" style="border:1px solid var(--cyan); background:transparent; color:var(--cyan); padding:5px 15px; cursor:pointer;">✖ ABORT</button>
+            <h2 id="t-title" style="margin:0; font-size:16px;">LOADING_CORE</h2>
+            <div id="score-box" style="font-size:12px;"></div>
         </div>
         <div id="game-area"></div>
     </div>
 
     <script>
-        // EXTERNAL MISSIONS
-        const links = [
+        // MASTER DATABASE - NO DUPES
+        const vanguardGames = [
+            { n: "VANGUARD: RPS", type: "rps" },
+            { n: "CLICKER EVO", type: "click" },
             { n: "BLOXD.IO", u: "https://bloxd.io/" },
             { n: "VECK.IO", u: "https://veck.io/" },
             { n: "SPACE WAVES", u: "https://spacewaves.io/" },
@@ -111,73 +132,68 @@
             { n: "DRIFT HUNTERS", u: "https://www.bing.com/games/embed/drift-hunters/" }
         ];
 
-        // VANGUARD ORIGINALS (Built-in code)
-        const originals = [
-            { n: "VANGUARD: RPS", type: "rps" },
-            { n: "CLICKER EVO", type: "click" },
-            { n: "CORE GUESSER", type: "guess" }
-        ];
+        let rgbMode = true;
 
-        const container = document.getElementById('g');
+        // LOAD CARDS
+        function loadGrid() {
+            const grid = document.getElementById('game-grid');
+            grid.innerHTML = "";
+            vanguardGames.forEach(game => {
+                grid.innerHTML += `
+                    <div class="card ${rgbMode ? 'rgb-on' : ''}" onclick="playGame('${game.u || ''}', '${game.n}', '${game.type || ''}')">
+                        <div class="thumb">IMAGE NOT FOUND<br>[ERROR_404]</div>
+                        <div class="info">${game.n}</div>
+                    </div>`;
+            });
+        }
 
-        // Render Cards
-        [...originals, ...links].forEach(game => {
-            container.innerHTML += `
-                <div class="card" onclick="play('${game.u || ''}', '${game.n}', '${game.type || ''}')">
-                    <div class="thumb">IMAGE NOT FOUND<br>[ERROR_404]</div>
-                    <div class="info">${game.n}</div>
-                </div>`;
-        });
+        // TAB SYSTEM FIX
+        function showTab(tabId, btn) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.side-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
 
-        function play(u, n, type) {
+        // SETTINGS FIX
+        function toggleRGB() {
+            rgbMode = !rgbMode;
+            loadGrid();
+        }
+
+        // GAME ENGINE
+        function playGame(u, n, type) {
+            const theater = document.getElementById('theater');
             const area = document.getElementById('game-area');
-            document.getElementById('theater').style.display = 'flex';
+            theater.style.display = 'flex';
             document.getElementById('t-title').innerText = n;
 
             if (u) {
                 area.innerHTML = `<iframe src="${u}"></iframe>`;
-            } else {
-                loadOriginal(type);
-            }
-        }
-
-        function loadOriginal(type) {
-            const area = document.getElementById('game-area');
-            if (type === 'rps') {
-                area.innerHTML = `<div style="text-align:center">
-                    <h3>ROCK PAPER SCISSORS</h3>
-                    <button onclick="runRPS('Rock')">ROCK</button>
-                    <button onclick="runRPS('Paper')">PAPER</button>
-                    <button onclick="runRPS('Scissors')">SCISSORS</button>
-                    <p id="rps-res"></p>
-                </div>`;
+            } else if (type === 'rps') {
+                area.innerHTML = `
+                    <h1 style="color:var(--cyan)">SHOOT!</h1>
+                    <div>
+                        <button class="rps-btn" onclick="runRPS('Rock')">ROCK</button>
+                        <button class="rps-btn" onclick="runRPS('Paper')">PAPER</button>
+                        <button class="rps-btn" onclick="runRPS('Scissors')">SCISSORS</button>
+                    </div>
+                    <h2 id="rps-res" style="margin-top:30px;">CHOOSE YOUR MOVE</h2>`;
             } else if (type === 'click') {
-                let count = 0;
-                area.innerHTML = `<div style="text-align:center">
-                    <h3>CLICKER EVOLUTION</h3>
-                    <h1 id="c-val">0</h1>
-                    <button onclick="document.getElementById('c-val').innerText = ++count">UPGRADE CORE</button>
-                </div>`;
-            } else if (type === 'guess') {
-                area.innerHTML = `<div style="text-align:center">
-                    <h3>CORE GUESSER (1-10)</h3>
-                    <input type="number" id="g-in" style="background:#000; color:#0ff; border:1px solid #0ff">
-                    <button onclick="runGuess()">TRY</button>
-                    <p id="g-res"></p>
-                </div>`;
+                let clicks = 0;
+                area.innerHTML = `
+                    <h3 style="color:var(--cyan)">VANGUARD CLICKER</h3>
+                    <h1 id="c-val" style="font-size:80px; margin:20px;">0</h1>
+                    <button class="rps-btn" onclick="document.getElementById('c-val').innerText = ++clicks">COLLECT DATA</button>`;
             }
         }
 
-        function runRPS(p) {
+        function runRPS(player) {
             const moves = ['Rock', 'Paper', 'Scissors'];
             const bot = moves[Math.floor(Math.random()*3)];
-            document.getElementById('rps-res').innerText = `YOU: ${p} | BOT: ${bot} -> ${p===bot ? 'TIE' : 'LOGGED'}`;
-        }
-
-        function runGuess() {
-            const val = document.getElementById('g-in').value;
-            const secret = Math.floor(Math.random()*10)+1;
-            document.getElementById('g-res').innerText = val == secret ? "CORE ACCESSED!" : "DENIED. WAS " + secret;
+            let result = (player === bot) ? "TIE" : "LOGGED";
+            if ((player==='Rock' && bot==='Scissors') || (player==='Paper' && bot==='Rock') || (player==='Scissors' && bot==='Paper')) result = "YOU WIN";
+            document.getElementById('rps-res').innerText = `${player} vs ${bot} : ${result}`;
         }
 
         function closeG() {
@@ -185,10 +201,8 @@
             document.getElementById('game-area').innerHTML = "";
         }
 
-        function full() {
-            let el = document.getElementById('game-area');
-            if(el.requestFullscreen) el.requestFullscreen();
-        }
+        // INIT
+        loadGrid();
     </script>
 </body>
 </html>
