@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VANGUARD GAMING | V4.0</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap');
+
+        /* --- THE CHROMA ENGINE (FIXES GLITCHING) --- */
+        :root {
+            --cyan: #00ffff;
+            --deep-blue: #000a1a;
+        }
+
+        @keyframes rgb-flow {
+            0% { border-color: #ff0000; box-shadow: 0 0 15px #ff0000; }
+            33% { border-color: #00ff00; box-shadow: 0 0 15px #00ff00; }
+            66% { border-color: #0000ff; box-shadow: 0 0 15px #0000ff; }
+            100% { border-color: #ff0000; box-shadow: 0 0 15px #ff0000; }
+        }
+
+        body {
+            background-color: #000;
+            color: var(--cyan);
+            font-family: 'Orbitron', sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            background: radial-gradient(circle, #001a33 0%, #000000 100%);
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 80px;
+            background: rgba(0, 10, 26, 0.95);
+            border-right: 2px solid var(--cyan);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 30px;
+            z-index: 100;
+        }
+
+        .side-btn {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 30px;
+            border: 2px solid var(--cyan);
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: 0.3s;
+        }
+
+        .side-btn:hover {
+            background: var(--cyan);
+            color: #000;
+            box-shadow: 0 0 20px var(--cyan);
+        }
+
+        /* --- MAIN DASHBOARD --- */
+        .viewport {
+            flex: 1;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        header {
+            padding: 40px;
+            text-align: center;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        .logo {
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: 12px;
+            text-shadow: 0 0 20px var(--cyan);
+            margin: 0;
+        }
+
+        /* --- THE GAME CARDS (RGB ACTIVE) --- */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 35px;
+            padding: 50px;
+        }
+
+        .card {
+            background: #000;
+            border: 4px solid var(--cyan);
+            border-radius: 15px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            /* This line enables the RGB Lights */
+            animation: rgb-flow 4s infinite linear;
+            will-change: transform, border-color; /* Fixes lag */
+        }
+
+        .card:hover {
+            transform: scale(1.08);
+            z-index: 10;
+        }
+
+        .thumb {
+            width: 100%;
+            height: 180px;
+            background: #050505;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8;
+            transition: 0.3s;
+        }
+
+        .card:hover .thumb img { opacity: 1; }
+
+        .info {
+            padding: 15px;
+            text-align: center;
+            background: #000d1a;
+            border-top: 1px solid var(--cyan);
+            font-weight: bold;
+            font-size: 14px;
+            letter-spacing: 2px;
+        }
+
+        /* --- THEATER MODE --- */
+        #theater {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            z-index: 10000;
+            flex-direction: column;
+        }
+
+        .t-nav {
+            padding: 20px;
+            background: #000;
+            border-bottom: 2px solid var(--cyan);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        iframe { flex: 1; width: 100%; border: none; }
+
+        .btn {
+            background: transparent;
+            color: var(--cyan);
+            border: 2px solid var(--cyan);
+            padding: 10px 25px;
+            font-family: 'Orbitron';
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn:hover { background: var(--cyan); color: #000; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="side-btn" onclick="location.reload()" title="Home">🏠</div>
+        <div class="side-btn" title="Trending">🔥</div>
+        <div class="side-btn" title="Multiplayer">👥</div>
+        <div class="side-btn" title="Settings">⚙️</div>
+    </div>
+
+    <div class="viewport">
+        <header>
+            <h1 class="logo">VANGUARD GAMING</h1>
+            <p style="color: #555; font-size: 12px; margin-top: 10px;">EST. 2026 // RGB_CHROMA_SYSTEM_v4</p>
+        </header>
+
+        <div class="grid" id="arcade"></div>
+    </div>
+
+    <div id="theater">
+        <div class="t-nav">
+            <button class="btn" onclick="closeM()">⬅ HUB</button>
+            <h3 id="m-title" style="margin:0; letter-spacing:3px;">SYSTEM_LOADING...</h3>
+            <button class="btn" onclick="goF()">⛶ FULLSCREEN</button>
+        </div>
+        <iframe id="m-frame" allow="autoplay; fullscreen; keyboard"></iframe>
+    </div>
+
+    <script>
+        // High-speed, Embed-safe Games
+        const missions = [
+            { n: "VECK.IO", u: "https://veck.io/", i: "https://img.gamedistribution.com/83273640700c439185794c1f6d7247d8-512x512.jpeg" },
+            { n: "BLOXD.IO", u: "https://bloxd.io/", i: "https://api.poki.com/poki-poki/v2/image/625/625/1657876116.png" },
+            { n: "SPACE WAVES", u: "https://spacewaves.io/", i: "https://img.gamedistribution.com/5f7623971e4d41389886470081d6683a-512x512.jpeg" },
+            { n: "TRAFFIC RIDER", u: "https://traffic-rider.io/", i: "https://img.gamedistribution.com/d687258380484501869e5d41571253d1-512x512.jpeg" },
+            { n: "ROCKET GOAL", u: "https://rocketgoal.io/", i: "https://img.gamedistribution.com/264287570481498696ec0667e45e758e-512x512.jpeg" },
+            { n: "DRIFT HUNTERS", u: "https://www.bing.com/games/embed/drift-hunters/", i: "https://img.gamedistribution.com/7106ed807d89408696ec0667e45e758e-512x512.jpeg" },
+            { n: "DRIFT BOSS", u: "https://www.bing.com/games/embed/drift-boss/", i: "https://img.gamedistribution.com/7106ed807d89408696ec0667e45e758e-512x512.jpeg" },
+            { n: "CYBER RACER", u: "https://games.gamezop.com/g/SkhljT2fdgb", i: "https://static.gamezop.com/SkhljT2fdgb/thumb.png" }
+        ];
+
+        const grid = document.getElementById('arcade');
+        
+        // Populate 60 slots for "Unlimited" feel
+        for(let i=0; i<60; i++) {
+            let m = missions[i % missions.length];
+            grid.innerHTML += `
+                <div class="card" onclick="startM('${m.u}', '${m.n}')">
+                    <div class="thumb">
+                        <img src="${m.i}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180/000a1a/00ffff?text=VANGUARD+MISSION'">
+                    </div>
+                    <div class="info">${m.n}</div>
+                </div>`;
+        }
+
+        function startM(u, n) {
+            document.getElementById('m-frame').src = u;
+            document.getElementById('theater').style.display = 'flex';
+            document.getElementById('m-title').innerText = "VANGUARD_DEPLOY: " + n;
+        }
+
+        function closeM() {
+            document.getElementById('theater').style.display = 'none';
+            document.getElementById('m-frame').src = "";
+        }
+
+        function goF() {
+            let f = document.getElementById('m-frame');
+            if (f.requestFullscreen) f.requestFullscreen();
+            else if (f.webkitRequestFullscreen) f.webkitRequestFullscreen();
+        }
+    </script>
+</body>
+</html>
