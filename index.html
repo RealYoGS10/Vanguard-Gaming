@@ -3,153 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>VANGUARD | V15 MOBILE</title>
+    <title>VANGUARD | V16</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Share+Tech+Mono&display=swap');
+        :root { --cyan: #00ffff; --bg: #000a0f; --card: rgba(0, 30, 40, 0.7); }
         
-        :root { 
-            --cyan: #00ffff; --bg: #000810; --card-bg: rgba(0, 20, 30, 0.8); 
-            --glow: 15px; --border: 2px;
-        }
+        body { background: var(--bg); color: var(--cyan); font-family: 'Orbitron', sans-serif; margin: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
 
-        body { 
-            background: var(--bg); color: var(--cyan); font-family: 'Orbitron', sans-serif; 
-            margin: 0; padding: 0; overflow-x: hidden; width: 100%;
-        }
+        /* MUSIC PLAYER - BOTTOM LEFT */
+        .music-ctrl { position: fixed; bottom: 80px; left: 20px; z-index: 1000; background: rgba(0,0,0,0.8); border: 1px solid var(--cyan); padding: 10px; border-radius: 30px; display: flex; align-items: center; gap: 10px; box-shadow: 0 0 10px var(--cyan); }
+        .music-ctrl button { background: none; border: 1px solid var(--cyan); color: var(--cyan); border-radius: 50%; width: 30px; height: 30px; cursor: pointer; }
 
-        /* MOBILE SIDEBAR FIX */
-        .sidebar { 
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 60px; 
-            background: rgba(0,10,10,0.95); border-top: 2px solid var(--cyan); 
-            display: flex; justify-content: space-around; align-items: center; z-index: 1000; 
-        }
-        @media (min-width: 768px) {
-            .sidebar { width: 70px; height: 100vh; flex-direction: column; border-top: none; border-right: 2px solid var(--cyan); top: 0; left: 0; justify-content: flex-start; padding-top: 20px; }
-        }
+        /* NAVBAR - BOTTOM FOR MOBILE, TOP FOR PC */
+        .nav { background: rgba(0,10,15,0.95); border-top: 2px solid var(--cyan); height: 60px; display: flex; justify-content: space-around; align-items: center; order: 2; }
+        @media (min-width: 768px) { .nav { order: 0; border-top: none; border-bottom: 2px solid var(--cyan); } }
 
-        .side-btn { width: 45px; height: 45px; border: 1px solid var(--cyan); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--cyan); font-size: 20px; }
-        .side-btn.active { background: var(--cyan); color: #000; box-shadow: 0 0 15px var(--cyan); }
+        .main { flex: 1; overflow-y: auto; padding: 20px; order: 1; -webkit-overflow-scrolling: touch; }
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        @media (min-width: 768px) { .grid { grid-template-columns: repeat(5, 1fr); } }
 
-        .main { width: 100%; height: 100vh; overflow-y: auto; padding-bottom: 120px; }
-        header { padding: 40px 10px; text-align: center; }
-        #search { background: #000; color: var(--cyan); border: 2px solid var(--cyan); padding: 12px; width: 85%; max-width: 500px; font-family: 'Share Tech Mono'; border-radius: 25px; outline: none; }
+        .card { background: var(--card); border: 1px solid rgba(0,255,255,0.2); border-radius: 12px; text-align: center; padding: 15px; transition: 0.3s; cursor: pointer; }
+        .card img { width: 50px; height: 50px; margin-bottom: 10px; filter: drop-shadow(0 0 5px var(--cyan)); }
+        .card span { display: block; font-size: 10px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-        /* RESPONSIVE GRID */
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 15px; padding: 15px; 
-        }
-        @media (min-width: 600px) { .grid { grid-template-columns: repeat(3, 1fr); } }
-        @media (min-width: 1000px) { .grid { grid-template-columns: repeat(6, 1fr); } }
+        /* THEATER MODE (FIX FOR "IP NOT FOUND") */
+        #theater { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; flex-direction: column; }
+        .t-bar { padding: 10px; background: #001a1a; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--cyan); }
+        iframe { flex: 1; border: none; background: #fff; }
+        .err-msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; z-index: -1; color: #555; }
 
-        .card { background: var(--card-bg); border: var(--border) solid rgba(0,255,255,0.2); border-radius: 12px; overflow: hidden; transition: 0.3s; }
-        .card:active { transform: scale(0.95); }
-        .thumb { width: 100%; height: 80px; display: flex; align-items: center; justify-content: center; background: #000; }
-        .thumb img { width: 40px; height: 40px; filter: drop-shadow(0 0 5px var(--cyan)); }
-        .info { padding: 8px; text-align: center; font-size: 8px; font-weight: bold; background: rgba(0,0,0,0.5); border-top: 1px solid rgba(0,255,255,0.1); }
-
-        /* MUSIC PLAYER */
-        .music-bar {
-            position: fixed; bottom: 70px; right: 20px; background: rgba(0,0,0,0.9);
-            border: 1px solid var(--cyan); padding: 10px; border-radius: 50px;
-            display: flex; align-items: center; gap: 10px; box-shadow: 0 0 10px var(--cyan); z-index: 999;
-        }
-        @media (min-width: 768px) { .music-bar { bottom: 20px; } }
-
-        /* THEATER */
-        #theater { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; flex-direction: column; }
-        iframe { flex: 1; border: none; }
-
-        .g-btn { padding: 8px 12px; background: transparent; color: var(--cyan); border: 1px solid var(--cyan); font-family: 'Orbitron'; font-size: 10px; }
+        .btn { background: none; border: 1px solid var(--cyan); color: var(--cyan); padding: 8px 15px; font-family: 'Orbitron'; cursor: pointer; border-radius: 5px; font-size: 12px; }
+        .btn:hover { background: var(--cyan); color: #000; }
+        #search { width: 90%; max-width: 400px; background: #000; border: 1px solid var(--cyan); color: var(--cyan); padding: 10px; border-radius: 20px; margin-bottom: 20px; display: block; margin-left: auto; margin-right: auto; }
     </style>
 </head>
 <body>
 
-    <div class="music-bar">
-        <span style="font-size: 10px; margin-left: 10px;">NEURAL_AUDIO</span>
-        <button class="g-btn" style="border-radius: 50%; padding: 5px 10px;" onclick="toggleMusic()">⏯</button>
-        <audio id="bg-audio" loop>
-            <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-        </audio>
+    <div class="music-ctrl">
+        <span style="font-size: 8px;">PHONK_DRIVE</span>
+        <button onclick="document.getElementById('m-player').paused ? document.getElementById('m-player').play() : document.getElementById('m-player').pause()">⏯</button>
+        <audio id="m-player" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3"></audio>
     </div>
 
-    <nav class="sidebar">
-        <div class="side-btn active" onclick="tab('home', this)">🏠</div>
-        <div class="side-btn" onclick="tab('settings', this)">⚙️</div>
-    </nav>
+    <div class="nav">
+        <div onclick="location.reload(true)" style="cursor:pointer">🏠</div>
+        <div onclick="alert('Vanguard V16 Loaded')" style="cursor:pointer">⚙️</div>
+    </div>
 
     <div class="main">
-        <div id="home" class="view">
-            <header>
-                <h1 style="letter-spacing: 5px; font-size: 1.8rem;">VANGUARD</h1>
-                <input type="text" id="search" placeholder="SYSTEM_SEARCH..." oninput="filter()">
-            </header>
-            <div id="game-grid" class="grid"></div>
-        </div>
-        <div id="settings" class="view" style="display:none; padding: 20px; text-align: center;">
-            <h2>SETTINGS</h2>
-            <button class="g-btn" onclick="location.reload(true)">HARD RESET SYSTEM</button>
-        </div>
+        <input type="text" id="search" placeholder="SEARCH_DATABASE..." oninput="search()">
+        <div class="grid" id="grid"></div>
     </div>
 
     <div id="theater">
-        <div style="padding: 10px; background: #001111; display: flex; justify-content: space-between; align-items: center;">
-            <button class="g-btn" onclick="closeG()">BACK</button>
-            <button class="g-btn" id="pop" style="border-color: red;">TAB</button>
+        <div class="t-bar">
+            <button class="btn" onclick="document.getElementById('theater').style.display='none'; document.getElementById('gf').src=''">CLOSE</button>
+            <button class="btn" id="force-btn" style="border-color: #ff0055; color: #ff0055;">FORCE OPEN (NEW TAB)</button>
+        </div>
+        <div class="err-msg">
+            <p>If the game doesn't load here (IP Error/Refused),<br>click <b>FORCE OPEN</b> above.</p>
         </div>
         <iframe id="gf"></iframe>
     </div>
 
     <script>
-        // CACHE BUSTER FORCE
-        const sessionID = Date.now();
-        console.log("VANGUARD LOADED: " + sessionID);
-
         const db = [
-            {n:"HACKERTYPE", t:"hack"}, {n:"BOTTLE FLIP", t:"flip"}, {n:"RPS SHOOT", t:"rps"},
-            {n:"Drift Hunters", u:"https://drift-hunters.com"}, {n:"Polytrack", u:"https://polytrack.io"}, {n:"Slow Roads", u:"https://slowroads.io"}, {n:"Smash Karts", u:"https://smashkarts.io"}, {n:"Moto X3M", u:"https://motox3m.org"}, {n:"Drift Boss", u:"https://driftboss.com"}, {n:"Madalin Cars 2", u:"https://madalin-stunt-cars-2.io"}, {n:"Snow Rider 3D", u:"https://snowrider3d.com"},
-            {n:"Krunker.io", u:"https://krunker.io"}, {n:"Shell Shockers", u:"https://shellshockers.io"}, {n:"Venge.io", u:"https://venge.io"}, {n:"Kirka.io", u:"https://kirka.io"}, {n:"Ev.io", u:"https://ev.io"}, {n:"1v1.lol", u:"https://1v1.lol"}, {n:"Deadshot.io", u:"https://deadshot.io"}, {n:"Kour.io", u:"https://kour.io"}, {n:"Combat Online", u:"https://combatonline.com"},
-            {n:"Infinite Craft", u:"https://neal.fun/infinite-craft/"}, {n:"GeoGuessr", u:"https://geoguessr.com"}, {n:"WorldGuessr", u:"https://worldguessr.com"}, {n:"Gartic Phone", u:"https://garticphone.com"}, {n:"Skribbl.io", u:"https://skribbl.io"}, {n:"Taming.io", u:"https://taming.io"}, {n:"Starve.io", u:"https://starve.io"}, {n:"Moomoo.io", u:"https://moomoo.io"}, {n:"Bloxd.io", u:"https://bloxd.io"}, {n:"Slither.io", u:"https://slither.io"}, {n:"Diep.io", u:"https://diep.io"}, {n:"Hole.io", u:"https://hole-io.com"}, {n:"Paper.io", u:"https://paper-io.com"}, {n:"Wings.io", u:"https://wings.io"}, {n:"Zombs Royale", u:"https://zombsroyale.io"}, {n:"Agar.io", u:"https://agar.io"}, {n:"FlyOrDie.io", u:"https://flyordie.io"}, {n:"Surviv.io", u:"https://surviv.io"}, {n:"Bonk.io", u:"https://bonk.io"}, {n:"Deeeep.io", u:"https://deeeep.io"}, {n:"Mope.io", u:"https://moper.io"}, {n:"Superhex.io", u:"https://superhex.io"}, {n:"Powerline.io", u:"https://powerline.io"}, {n:"Splix.io", u:"https://splix.io"}, {n:"Lordz.io", u:"https://lordz.io"}, {n:"Gulper.io", u:"https://gulper.io"}, {n:"Cubes2048", u:"https://cubes2048.io"}, {n:"Hexanaut.io", u:"https://hexanaut.io"}, {n:"Worms Zone", u:"https://worms.zone"}, {n:"Ducklings.io", u:"https://ducklings.io"}, {n:"LolBeans.io", u:"https://lolbeans.io"}, {n:"JustFall.lol", u:"https://justfall.lol"}, {n:"BuildRoyale.io", u:"https://buildroyale.io"}, {n:"Wilds.io", u:"https://wilds.io"}, {n:"Cookie Clicker", u:"https://orteil.dashnet.org/cookieclicker/"}, {n:"Tetr.io", u:"https://tetr.io"}, {n:"2048", u:"https://play2048.co"}, {n:"Wordle", u:"https://wordle.com"}, {n:"Minecraft", u:"https://classic.minecraft.net"}, {n:"PokeRogue", u:"https://pokerogue.net"}, {n:"Runescape", u:"https://oldschool.runescape.com"}, {n:"FNF", u:"https://fridaynightfunkin.net"}, {n:"Happy Wheels", u:"https://totaljerkface.com/happy_wheels.tjf"}, {n:"Burrito Bison", u:"https://burritobison.com"}, {n:"BasketBros", u:"https://basketbros.io"}, {n:"FootballBros", u:"https://footballbros.io"}, {n:"Minigiants.io", u:"https://minigiants.io"}
+            {n:"Drift Hunters", u:"https://drift-hunters.com"}, {n:"1v1.lol", u:"https://1v1.lol"}, {n:"Krunker", u:"https://krunker.io"}, {n:"Shell Shockers", u:"https://shellshockers.io"}, {n:"Polytrack", u:"https://polytrack.io"}, {n:"Smash Karts", u:"https://smashkarts.io"}, {n:"Moto X3M", u:"https://motox3m.org"}, {n:"Infinite Craft", u:"https://neal.fun/infinite-craft/"}, {n:"Bloxd.io", u:"https://bloxd.io"}, {n:"Snow Rider 3D", u:"https://snowrider3d.com"}, {n:"Slither.io", u:"https://slither.io"}, {n:"Agar.io", u:"https://agar.io"}, {n:"Paper.io", u:"https://paper-io.com"}, {n:"Diep.io", u:"https://diep.io"}, {n:"Moomoo.io", u:"https://moomoo.io"}, {n:"Zombs Royale", u:"https://zombsroyale.io"}, {n:"Suroi.io", u:"https://suroi.io"}, {n:"Kirka.io", u:"https://kirka.io"}, {n:"Ev.io", u:"https://ev.io"}, {n:"Venge.io", u:"https://venge.io"}, {n:"BitLife", u:"https://bitlifeonline.com"}, {n:"Cookie Clicker", u:"https://orteil.dashnet.org/cookieclicker/"}, {n:"Chess.com", u:"https://chess.com"}, {n:"Tetr.io", u:"https://tetr.io"}
         ];
 
-        function init() {
-            const grid = document.getElementById('game-grid');
-            grid.innerHTML = "";
-            db.forEach(g => {
-                const icon = g.u ? `https://www.google.com/s2/favicons?sz=64&domain=${new URL(g.u).hostname}` : '';
-                grid.innerHTML += `<div class="card" data-name="${g.n.toLowerCase()}" onclick="play('${g.u||''}','${g.n}','${g.t||''}')">
-                    <div class="thumb">${g.u ? `<img src="${icon}">` : '⚡'}</div>
-                    <div class="info">${g.n}</div>
-                </div>`;
+        function build() {
+            const g = document.getElementById('grid');
+            g.innerHTML = db.map(i => `
+                <div class="card" onclick="launch('${i.u}', '${i.n}')">
+                    <img src="https://www.google.com/s2/favicons?sz=64&domain=${new URL(i.u).hostname}">
+                    <span>${i.n}</span>
+                </div>
+            `).join('');
+        }
+
+        function launch(u, n) {
+            document.getElementById('theater').style.display = 'flex';
+            document.getElementById('gf').src = u;
+            document.getElementById('force-btn').onclick = () => window.open(u, '_blank');
+        }
+
+        function search() {
+            let v = document.getElementById('search').value.toLowerCase();
+            document.querySelectorAll('.card').forEach(c => {
+                c.style.display = c.innerText.toLowerCase().includes(v) ? 'block' : 'none';
             });
         }
 
-        function toggleMusic() { const a = document.getElementById('bg-audio'); return a.paused ? a.play() : a.pause(); }
-
-        function tab(id, b) {
-            document.querySelectorAll('.view').forEach(v => v.style.display='none');
-            document.getElementById(id).style.display='block';
-            document.querySelectorAll('.side-btn').forEach(btn => btn.classList.remove('active'));
-            b.classList.add('active');
-        }
-
-        function play(u, n, t) {
-            document.getElementById('theater').style.display='flex';
-            document.getElementById('pop').onclick = () => window.open(u, '_blank');
-            const f = document.getElementById('gf');
-            if(u) f.src = u;
-            else if(t==='hack') f.srcdoc = "<body style='background:#000;color:#0ff;display:flex;align-items:center;justify-content:center;height:100vh;font-family:monospace'><h1>MOBILE_BYPASS_ACTIVE</h1></body>";
-        }
-
-        function closeG() { document.getElementById('theater').style.display='none'; document.getElementById('gf').src=""; }
-        function filter() {
-            const q = document.getElementById('search').value.toLowerCase();
-            document.querySelectorAll('.card').forEach(c => c.style.display = c.dataset.name.includes(q) ? 'block' : 'none');
-        }
-
-        window.onload = init;
+        // Cache-Buster & Auto-Load
+        window.onload = build;
     </script>
 </body>
 </html>
