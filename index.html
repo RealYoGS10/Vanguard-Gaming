@@ -3,99 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VANGUARD | V16</title>
+    <title>VANGUARD | V18 PORTAL</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Share+Tech+Mono&display=swap');
-        :root { --cyan: #00ffff; --bg: #000a0f; --card: rgba(0, 30, 40, 0.7); }
         
-        body { background: var(--bg); color: var(--cyan); font-family: 'Orbitron', sans-serif; margin: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+        :root { --neon: #00ffff; --pink: #ff00ff; --bg: #02050a; }
 
-        /* MUSIC PLAYER - BOTTOM LEFT */
-        .music-ctrl { position: fixed; bottom: 80px; left: 20px; z-index: 1000; background: rgba(0,0,0,0.8); border: 1px solid var(--cyan); padding: 10px; border-radius: 30px; display: flex; align-items: center; gap: 10px; box-shadow: 0 0 10px var(--cyan); }
-        .music-ctrl button { background: none; border: 1px solid var(--cyan); color: var(--cyan); border-radius: 50%; width: 30px; height: 30px; cursor: pointer; }
+        /* THE SCANLINE & GLITCH OVERLAY */
+        body::after {
+            content: " "; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 3px, 3px 100%; z-index: 1000; pointer-events: none;
+        }
 
-        /* NAVBAR - BOTTOM FOR MOBILE, TOP FOR PC */
-        .nav { background: rgba(0,10,15,0.95); border-top: 2px solid var(--cyan); height: 60px; display: flex; justify-content: space-around; align-items: center; order: 2; }
-        @media (min-width: 768px) { .nav { order: 0; border-top: none; border-bottom: 2px solid var(--cyan); } }
+        body { 
+            background: var(--bg); color: var(--neon); font-family: 'Orbitron', sans-serif; 
+            margin: 0; overflow-x: hidden; height: 100vh;
+        }
 
-        .main { flex: 1; overflow-y: auto; padding: 20px; order: 1; -webkit-overflow-scrolling: touch; }
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        /* GLASS MORPHISM MAIN */
+        .main { height: 100vh; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        
+        .header { text-align: center; margin-bottom: 30px; }
+        h1 { font-size: 3rem; letter-spacing: 15px; margin: 0; text-shadow: 0 0 15px var(--neon); animation: pulse 2s infinite; }
+        
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+
+        #search { 
+            background: rgba(0,0,0,0.8); border: 1px solid var(--neon); color: var(--neon);
+            padding: 12px 20px; width: 300px; border-radius: 0; font-family: 'Share Tech Mono';
+            outline: none; box-shadow: 0 0 10px var(--neon); margin-top: 20px;
+        }
+
+        /* GRID SYSTEM */
+        .grid { 
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; 
+            max-width: 1000px; width: 100%; margin-top: 20px;
+        }
         @media (min-width: 768px) { .grid { grid-template-columns: repeat(5, 1fr); } }
 
-        .card { background: var(--card); border: 1px solid rgba(0,255,255,0.2); border-radius: 12px; text-align: center; padding: 15px; transition: 0.3s; cursor: pointer; }
-        .card img { width: 50px; height: 50px; margin-bottom: 10px; filter: drop-shadow(0 0 5px var(--cyan)); }
-        .card span { display: block; font-size: 10px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .card { 
+            background: rgba(0, 255, 255, 0.03); border: 1px solid rgba(0, 255, 255, 0.2);
+            padding: 15px; text-align: center; transition: 0.3s; cursor: pointer;
+            position: relative; overflow: hidden;
+        }
+        .card:hover { background: rgba(0, 255, 255, 0.1); border-color: var(--neon); transform: scale(1.05); }
+        .card img { width: 40px; height: 40px; margin-bottom: 10px; filter: drop-shadow(0 0 5px var(--neon)); }
+        .card span { font-size: 10px; text-transform: uppercase; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* THEATER MODE (FIX FOR "IP NOT FOUND") */
-        #theater { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; flex-direction: column; }
-        .t-bar { padding: 10px; background: #001a1a; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--cyan); }
+        /* THEATER (THE BYPASS WINDOW) */
+        #theater { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #000; z-index: 9999; flex-direction: column; 
+        }
+        .t-bar { padding: 10px; border-bottom: 1px solid var(--neon); display: flex; justify-content: space-between; align-items: center; background: #011; }
+        .t-bar h2 { font-size: 12px; margin: 0; color: var(--pink); }
+        
         iframe { flex: 1; border: none; background: #fff; }
-        .err-msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; z-index: -1; color: #555; }
 
-        .btn { background: none; border: 1px solid var(--cyan); color: var(--cyan); padding: 8px 15px; font-family: 'Orbitron'; cursor: pointer; border-radius: 5px; font-size: 12px; }
-        .btn:hover { background: var(--cyan); color: #000; }
-        #search { width: 90%; max-width: 400px; background: #000; border: 1px solid var(--cyan); color: var(--cyan); padding: 10px; border-radius: 20px; margin-bottom: 20px; display: block; margin-left: auto; margin-right: auto; }
+        .bypass-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: #000; z-index: -1; text-align: center; padding: 20px;
+        }
+
+        .btn { 
+            background: transparent; border: 1px solid var(--neon); color: var(--neon);
+            padding: 10px 15px; font-family: 'Orbitron'; cursor: pointer; font-size: 11px;
+        }
+        .btn:hover { background: var(--neon); color: #000; }
+        .btn-red { border-color: var(--pink); color: var(--pink); margin-left: 10px; }
+        .btn-red:hover { background: var(--pink); color: #000; }
+
+        /* MUSIC CONTROLLER */
+        .music-ui { position: fixed; bottom: 20px; left: 20px; z-index: 2000; display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.8); padding: 5px 15px; border: 1px solid var(--neon); border-radius: 20px; }
     </style>
 </head>
 <body>
 
-    <div class="music-ctrl">
-        <span style="font-size: 8px;">PHONK_DRIVE</span>
-        <button onclick="document.getElementById('m-player').paused ? document.getElementById('m-player').play() : document.getElementById('m-player').pause()">⏯</button>
-        <audio id="m-player" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3"></audio>
-    </div>
-
-    <div class="nav">
-        <div onclick="location.reload(true)" style="cursor:pointer">🏠</div>
-        <div onclick="alert('Vanguard V16 Loaded')" style="cursor:pointer">⚙️</div>
+    <div class="music-ui">
+        <span style="font-size: 9px;">AUDIO_LINK</span>
+        <button class="btn" style="border-radius: 50%; width: 30px; height: 30px; padding:0" onclick="toggleM()">⏯</button>
+        <audio id="m-engine" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"></audio>
     </div>
 
     <div class="main">
-        <input type="text" id="search" placeholder="SEARCH_DATABASE..." oninput="search()">
-        <div class="grid" id="grid"></div>
+        <div class="header">
+            <h1>VANGUARD</h1>
+            <input type="text" id="search" placeholder="PORTAL_ID..." oninput="filter()">
+        </div>
+        <div class="grid" id="g-grid"></div>
     </div>
 
     <div id="theater">
         <div class="t-bar">
-            <button class="btn" onclick="document.getElementById('theater').style.display='none'; document.getElementById('gf').src=''">CLOSE</button>
-            <button class="btn" id="force-btn" style="border-color: #ff0055; color: #ff0055;">FORCE OPEN (NEW TAB)</button>
+            <button class="btn" onclick="closeP()">[ BACK ]</button>
+            <h2 id="g-name">LOADING PORTAL...</h2>
+            <div>
+                <button class="btn" onclick="document.querySelector('iframe').requestFullscreen()">[ FULL ]</button>
+                <button id="breakout" class="btn btn-red">[ BREAKOUT ]</button>
+            </div>
         </div>
-        <div class="err-msg">
-            <p>If the game doesn't load here (IP Error/Refused),<br>click <b>FORCE OPEN</b> above.</p>
+        <div class="bypass-screen">
+            <h3 style="color: var(--pink);">ENCRYPTED CONNECTION REFUSED</h3>
+            <p style="font-size: 12px;">This game has "X-Frame" security.<br>You must use the <b>BREAKOUT</b> button above to play.</p>
         </div>
-        <iframe id="gf"></iframe>
+        <iframe id="g-frame"></iframe>
     </div>
 
     <script>
         const db = [
-            {n:"Drift Hunters", u:"https://drift-hunters.com"}, {n:"1v1.lol", u:"https://1v1.lol"}, {n:"Krunker", u:"https://krunker.io"}, {n:"Shell Shockers", u:"https://shellshockers.io"}, {n:"Polytrack", u:"https://polytrack.io"}, {n:"Smash Karts", u:"https://smashkarts.io"}, {n:"Moto X3M", u:"https://motox3m.org"}, {n:"Infinite Craft", u:"https://neal.fun/infinite-craft/"}, {n:"Bloxd.io", u:"https://bloxd.io"}, {n:"Snow Rider 3D", u:"https://snowrider3d.com"}, {n:"Slither.io", u:"https://slither.io"}, {n:"Agar.io", u:"https://agar.io"}, {n:"Paper.io", u:"https://paper-io.com"}, {n:"Diep.io", u:"https://diep.io"}, {n:"Moomoo.io", u:"https://moomoo.io"}, {n:"Zombs Royale", u:"https://zombsroyale.io"}, {n:"Suroi.io", u:"https://suroi.io"}, {n:"Kirka.io", u:"https://kirka.io"}, {n:"Ev.io", u:"https://ev.io"}, {n:"Venge.io", u:"https://venge.io"}, {n:"BitLife", u:"https://bitlifeonline.com"}, {n:"Cookie Clicker", u:"https://orteil.dashnet.org/cookieclicker/"}, {n:"Chess.com", u:"https://chess.com"}, {n:"Tetr.io", u:"https://tetr.io"}
+            {n:"Drift Hunters", u:"https://drift-hunters.com"}, {n:"1v1.lol", u:"https://1v1.lol"}, {n:"Krunker", u:"https://krunker.io"}, {n:"Shell Shockers", u:"https://shellshockers.io"}, {n:"Polytrack", u:"https://polytrack.io"}, {n:"Smash Karts", u:"https://smashkarts.io"}, {n:"Moto X3M", u:"https://motox3m.org"}, {n:"Infinite Craft", u:"https://neal.fun/infinite-craft/"}, {n:"Bloxd.io", u:"https://bloxd.io"}, {n:"Snow Rider 3D", u:"https://snowrider3d.com"}, {n:"Slither.io", u:"https://slither.io"}, {n:"Agar.io", u:"https://agar.io"}, {n:"Paper.io", u:"https://paper-io.com"}, {n:"Diep.io", u:"https://diep.io"}, {n:"Moomoo.io", u:"https://moomoo.io"}, {n:"Zombs Royale", u:"https://zombsroyale.io"}, {n:"Suroi.io", u:"https://suroi.io"}, {n:"Kirka.io", u:"https://kirka.io"}, {n:"Ev.io", u:"https://ev.io"}, {n:"Venge.io", u:"https://venge.io"}, {n:"BitLife", u:"https://bitlifeonline.com"}, {n:"Cookie Clicker", u:"https://orteil.dashnet.org/cookieclicker/"}, {n:"Chess.com", u:"https://chess.com"}, {n:"Tetr.io", u:"https://tetr.io"}, {n:"FNF", u:"https://fridaynightfunkin.net"}
         ];
 
-        function build() {
-            const g = document.getElementById('grid');
-            g.innerHTML = db.map(i => `
-                <div class="card" onclick="launch('${i.u}', '${i.n}')">
-                    <img src="https://www.google.com/s2/favicons?sz=64&domain=${new URL(i.u).hostname}">
-                    <span>${i.n}</span>
+        function init() {
+            const grid = document.getElementById('g-grid');
+            grid.innerHTML = db.map(g => `
+                <div class="card" onclick="openP('${g.u}', '${g.n}')">
+                    <img src="https://www.google.com/s2/favicons?sz=64&domain=${new URL(g.u).hostname}">
+                    <span>${g.n}</span>
                 </div>
             `).join('');
         }
 
-        function launch(u, n) {
+        function openP(u, n) {
             document.getElementById('theater').style.display = 'flex';
-            document.getElementById('gf').src = u;
-            document.getElementById('force-btn').onclick = () => window.open(u, '_blank');
+            document.getElementById('g-name').innerText = n.toUpperCase();
+            document.getElementById('g-frame').src = u;
+            document.getElementById('breakout').onclick = () => window.open(u, '_blank');
         }
 
-        function search() {
-            let v = document.getElementById('search').value.toLowerCase();
-            document.querySelectorAll('.card').forEach(c => {
-                c.style.display = c.innerText.toLowerCase().includes(v) ? 'block' : 'none';
-            });
+        function closeP() { document.getElementById('theater').style.display='none'; document.getElementById('g-frame').src=''; }
+        function toggleM() { const m = document.getElementById('m-engine'); return m.paused ? m.play() : m.pause(); }
+        
+        function filter() {
+            let s = document.getElementById('search').value.toLowerCase();
+            document.querySelectorAll('.card').forEach(c => c.style.display = c.innerText.toLowerCase().includes(s) ? 'block' : 'none');
         }
 
-        // Cache-Buster & Auto-Load
-        window.onload = build;
+        window.onload = init;
     </script>
 </body>
 </html>
